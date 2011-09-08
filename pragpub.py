@@ -1,20 +1,22 @@
 """
 	Downloads pragprog magazines
 """
+"""Downloads specified version of PragPub magazine from http://pragprog.com/magazines"""
 
 from BeautifulSoup import BeautifulSoup
 import urllib2
 
 def get_issues(soup):
-	"""docstring for get"""
+	"""Returns clean list of strings with magazine date and issue number from http://pragprog.com/magazines."""
 	issues = []
 	cleaned_issues = []
 	issues = soup.findAll("h3")
 	for issue in issues:
-		cleaned_issue = issue.string.encode("UTF-8").strip()
+		cleaned_issue = link_cleaner(issue)
 		cleaned_issues.append(cleaned_issue)
 	return cleaned_issues
-		
+
+# not working either. just trying to get some thinking down
 def get_formats(issue, format, soup):
 	"""Grabs specified issue(s) and its format"""
 	issue_formats = {}
@@ -26,15 +28,16 @@ def get_formats(issue, format, soup):
 			print clean_format
 		print mag_format
 
-# not working correctly but I'm tired. need to use BeautifulSoup .string method
+# sort of working now. works if a unicode string is passed.
+# next get it to work no matter what type of string is passed
 def link_cleaner(html_element):
-	"""Takes HTML element including takes, and returns new string encoded UTF-8 char encoding and stips whitespace"""
+	"""Takes HTML elementand returns new string encoded UTF-8 char encoding and stips whitespace"""
 	try:
 		clean_element = html_element.string.encode("UTF-8").strip()
+		return clean_element
 	except AttributeError:
-		pass
-	finally:
 		clean_element = html_element.string.strip()
+		return	clean_element
 
 def make_soup(magazine_url):
 	"""docstring for make_soup"""
@@ -42,12 +45,12 @@ def make_soup(magazine_url):
 	soup = BeautifulSoup(html)
 	return soup
 
-
 def main():
 	"""docstring for main"""
 	soup = make_soup("http://pragprog.com/magazines")
 	issues = get_issues(soup)
-	get_formats(issues, soup)
+	print issues
+	# get_formats(issues, soup)
 
 if __name__ == "__main__":
 	main()
